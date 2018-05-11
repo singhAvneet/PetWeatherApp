@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    border: 1px solid #ddd;
+}
+
+th, td {
+    text-align: left;
+    padding: 16px;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2
+}
+</style>
+</head>
+<body style="text-align: center">
+
+<h2>Does My Pet Need An Umbrella ?</h2>
+<p>Select a pet to find out</p>
+
+<table id="records_table">
+  <tr>
+    <th>Name</th>
+    <th>Type</th>
+    <th>Breed</th>
+    <th></th>
+  </tr>
+  
+</table>
+<a href="/new">Add New</a>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script>
+  $.ajax({
+  type: 'GET',
+  url: "/list_pets" ,
+  dataType: 'json',
+  success: function (response) {
+ 
+
+$(function() {
+    $.each(response, function(i, item) {
+        var $tr = $('<tr>').append(
+            $('<td>').text(item.name),
+            $('<td>').text(item.type),
+            $('<td>').text(item.breed),
+              $('<td>').html("<a id='"+item.ID+"' href='/detail?id="+item.ID+"'>view</a>")
+        ).appendTo('#records_table');
+        //console.log($tr.wrap('<p>').html());
+    });
+});
+
+
+  }
+});
+</script>
+
+</html>

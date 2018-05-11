@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+ 
+* {
+    box-sizing: border-box;
+}
+
+
+label {
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+}
+
+.container {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+
+.col-25 {
+    float: left;
+    width: 25%;
+    margin-top: 6px;
+}
+
+.col-75 {
+    float: left;
+    width: 75%;
+    margin-top: 6px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+    .col-25, .col-75, input[type=submit] {
+        width: 100%;
+        margin-top: 0;
+    }
+}
+</style>
+
+</head>
+<body onload="getDetailById();">
+
+    <div class="container">
+       
+          <div class="row">
+            <div class="col-75">
+                <!-- <img src="" width="100%" height="224"> -->
+                <img src="" width="100%" height="224" >
+            </div>
+            <div class="col-25">
+              <h1>Yup!</h1>
+             
+                <label id="name" for="fname">Name</label>
+                <ul>
+                  <li id="Maxtemp"></li><li id="Mintemp"></li><li id="humidity"></li><li id="status"></li>
+                </ul>
+            </div>
+          </div>
+  </div>
+
+  <a href="/">Lookup a different pet</a>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
+<script>
+
+
+
+
+
+function checkRain(lat,lon,nam,loc){ 
+$.ajax({
+                url:'https://openweathermap.org/data/2.5/weather?lat='+lat+'&lon='+lon+'&appid=b6907d289e10d714a6e88b30761fae22',
+                complete: function (response) {
+              var obj = jQuery.parseJSON( response.responseText );
+                // var location=obj.main.temp;
+                document.getElementById("Maxtemp").innerHTML ="Max "+obj.main.temp_max+" Deg";
+                document.getElementById("Mintemp").innerHTML ="Min "+ obj.main.temp_min+" Deg";
+                document.getElementById("humidity").innerHTML ="Humidity "+obj.main.humidity+" %";
+                 var str=JSON.stringify(obj.weather);
+                 if (str.indexOf("Rain") >= 0){
+                  $("img").attr("src","https://image.flaticon.com/icons/svg/10/10641.svg");
+                  document.getElementById("name").innerHTML ="It looks like "+nam+" is going to need one in "+loc;
+                  document.getElementById("status").innerHTML ="Raining";
+                }
+                else{
+                  $("img").attr("src","https://image.flaticon.com/icons/svg/185/185466.svg");
+                  document.getElementById("name").innerHTML ="It looks like "+nam+" does not need one in "+loc;
+                  document.getElementById("status").innerHTML ="Not raining";
+                }
+}});
+
+}
+function getQueryVariable(variable) { 
+  var query = window.location.search.substring(1); 
+  var vars = query.split("&"); 
+  for (var i=0;i<vars.length;i++) { 
+    var pair = vars[i].split("="); 
+  if(pair[0] == variable){return pair[1];} } return(false); 
+}
+
+
+function getDetailById(){
+var id=getQueryVariable('id');
+
+   $.ajax({
+    type: "GET",
+  // url: "/list_pets?id="+id ,
+  data:{id:id},
+  url: "/list_pets",
+  dataType: 'json',
+  success: function (response) {
+    $(function() {
+    $.each(response, function(i, item) {
+      // var $tr = $('<tr>').append(
+      //       $('<td>').text(item.name),
+      //       $('<td>').text(item.type),
+      //       $('<td>').text(item.breed)
+          
+      //   ).appendTo('#records_table');
+        checkRain(item.lat,item.longi,item.name,item.location);
+        
+    });
+  
+});
+},
+error: function (xhr, ajaxOptions, thrownError) {
+          
+        }
+});
+}
+</script>
+</html>
